@@ -36,83 +36,144 @@ NSString *KeyCountry = @"country";
                 if (!(dicCountries[[string substringWithRange:NSMakeRange(0, 3)]] == nil)) {
                     return @[dicCountries[[string substringWithRange:NSMakeRange(0, 3)]][0],dicCountries[[string substringWithRange:NSMakeRange(0, 3)]][1]];
                 }
+            }else{
+                return @[@"",@0];
             };
         }
     }else{
-        return @[@"",@""];
+        return @[@"",@0];
     }
-    return nil;
+    return @[@"",@0];
     
     
     
 }
 -(NSString *) prepareNumber: (NSString *) phoneNumber from: (NSArray *) countryArray{
+    NSInteger numberLength;
+    BOOL rukz = NO;
+    BOOL otherCountry = NO;
+    
     NSMutableString *tempstring = [NSMutableString new];
-    [tempstring appendString:@"+"];
-    for (int i = 0; i < [phoneNumber length]; i++) {
-        if (i == 1){
-            if ([countryArray[1] isEqual: @10]){
-                [tempstring appendString:@" ("];
-                [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-            }else{
-                [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];            }
-        }else{
-            if (i == 3) {
+    
+    
+    if ([countryArray[1] isEqual:@10]) {
+        numberLength = [countryArray[1] intValue] + 1;
+        rukz = YES;
+    }else if (([countryArray[1] intValue] >= 8) && ([countryArray[1] intValue] < 10)) {
+        numberLength = [countryArray[1] intValue] + 3;
+        otherCountry = YES;
+    }else{
+        numberLength = 12;
+        
+    }
+    if (!([[phoneNumber substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"+"])){
+        [tempstring appendString:@"+"];
+        
+    }else{
+        numberLength ++;
+    }
+    
+    for (int i = 0; (i < numberLength) && (i < [phoneNumber length]); i++) {
+        
+        switch (i) {
+         /*   case 0:
+                if ([[phoneNumber substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"+"]) {
+                    break;
                 
-                if (([countryArray[1] intValue] >= 8) && ( [countryArray[1] intValue] < 10)){
+                }*/
+            case 1:
+                
+                if (rukz) {
+                    [tempstring appendString:@" ("];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                break;
+            case 3:
+                if (otherCountry){
                     [tempstring appendString:@" ("];
                     [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
                 }else{
                     [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
                 }
-                
-            }else{
-                if (i == 4) {
-                    if (([countryArray[1] intValue] >= 8) && ( [countryArray[1] intValue] < 10)){
-                  //      [tempstring appendString:@") "];
-                        [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                        [tempstring appendString:@") "];
-                        
-                    }else if ([countryArray[1] isEqual: @10]) {
-                        [tempstring appendString:@") "];
-                        [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                    }else{
-                        [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                    }
-                }else {
-                    if (i == 7) {
-                        if (([countryArray[1] intValue] >= 8) && ( [countryArray[1] intValue] < 10)) {
-                        //      [tempstring appendString:@") "];
-                              [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                              [tempstring appendString:@"-"];
-                              
-                          }else if ([countryArray[1] isEqual: @10]) {
-                              [tempstring appendString:@"-"];
-                              [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                          }else{
-                              [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                          }
-                    }else{
-                        if (i == 9){
-                            if (([countryArray[1] intValue] > 8) && ( [countryArray[1] intValue] < 10)){
-                            //      [tempstring appendString:@") "];
-                                  [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                                  [tempstring appendString:@"-"];
-                                  
-                              }else if ([countryArray[1] isEqual: @10]) {
-                                  [tempstring appendString:@"-"];
-                                  [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                              }else{
-                                  [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
-                              }
-                            
-                        }else{
-                            [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];                        }
-                    }
+                break;
+            case 4:
+                if (otherCountry){
+                    //      [tempstring appendString:@") "];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    //     [tempstring appendString:@") "];
+                    
+                }else if (rukz) {
+                    [tempstring appendString:@") "];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
                 }
-            }
-            
+                break;
+            case 5:
+                if (otherCountry){
+                    [tempstring appendString:@") "];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }
+                break;
+            case 7:
+                if (rukz){
+                    [tempstring appendString:@"-"];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                                                    
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                    break;
+            case 8:
+                if (otherCountry){
+                    [tempstring appendString:@"-"];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                break;
+                case 9:
+                if (rukz) {
+                    [tempstring appendString:@"-"];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                break;
+                case 10:
+                if ((otherCountry) && ([countryArray[1] intValue] != 8)) {
+                    [tempstring appendString:@"-"];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                break;
+                case 11:
+                if (rukz) {
+                    [tempstring appendString:@"-"];
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                }else{
+                    [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                    
+                }
+                break;
+            default:
+                [tempstring appendString:[phoneNumber substringWithRange:NSMakeRange(i, 1)]];
+                break;
         }
+        
+        
+        
         
     }
     
@@ -122,7 +183,13 @@ NSString *KeyCountry = @"country";
     // good luck
     NSArray * array = [NSArray new];
     NSString *tempString = [NSString new];
+    if ([string length] == 0) {
+        return @{KeyPhoneNumber:@"",
+                 KeyCountry:@"" };
+        
+    }
     array = [self checkCountry:string];
+    
     tempString = [self prepareNumber:string from:array];
     return @{KeyPhoneNumber: [self prepareNumber:string from:[self checkCountry:string]],
              KeyCountry: [self checkCountry:string][0]};
